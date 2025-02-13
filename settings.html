@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>设置</title>
+        <script src="./settings.js"></script>
+        <link rel="stylesheet" href="./settings.css">
+    </head>
+    <body>
+        <div id="item_boxes" class="settings-box">
+            <div class="settings-item">登录与安全</div>
+            <div class="settings-item">登录日志</div>
+        </div>
+        <div id="settings-content" class="settings-content">
+            <div id="acount_and_safety">
+                <div class="settings-small-div">
+                    <h3 style="display: inline-block;">计算器-登录密钥：</h3>
+                    <input type="password" class="input" disabled id="calculator_password_change">
+                    <button class="button" id="calculator-change" onclick="enable_calculator_password_change()">修改</button>
+                </div>
+                <div class="settings-small-div">
+                    <h3 style="display: inline-block;">二层登录-登录方式：</h3>
+                    <input type="radio" name="lev2-login-type" value="hand-tracking" id="login-type-handtracking" onclick="hand_tracking()">
+                    <label for="login-type-handtracking">手势登录</label>
+                    <input type="radio" name="lev2-login-type" value="password" id="login-type-password" onclick="password_login()">
+                    <label for="login-type-password">密码登录</label>
+                    <div id="lev2_password_login" style="display: none;">
+                        <input type="password" class="input" disabled id="lv2_password_change">
+                        <button class="button" id="lv2-change" onclick="lev2_password_change()">修改</button>
+                    </div>
+                    <div id="lev2_hand_tracking" style="display: none;">
+                        <button class="button" id="to_handtracking_manager" onclick="start_hand_tracking_manager()">进入手势识别管理器</button>
+                    </div>
+                </div>
+                <div class="settings-small-div">
+                    <h3 style="display: inline-block;">设置-进入方式：</h3>
+                    <input type="radio" name="login-type" value="hand-tracking" id="settings-enter-type-handtracking" onclick="enable_settings_handtracking()">
+                    <label for="settings-enter-type-handtracking">手势登录</label>
+                    <input type="radio" name="login-type" value="password" id="settings-enter-type-password" onclick="enable_settings_password()">
+                    <label for="settings-enter-type-password">密码登录</label>
+                    <div id="settings_enter_password_login" style="display: none;">
+                        <input type="password" class="input" disabled id="settings_enter_password_change">
+                        <button class="button" id="settings_enter_change" onclick="settings_change_password()">修改</button>
+                    </div>
+                    <div id="settings_enter_hand_tracking" style="display: none;">
+                        <button class="button" id="to_handtracking_manager" onclick="start_hand_tracking_manager()">进入手势识别管理器</button>
+                    </div>
+                </div>
+                <div class="settings-small-div">
+                    <h3 style="display: inline-block;">危险操作</h3>
+                    <button class="dangerous-button" style="left: 50px;" onclick="forever_hide()">永久封存</button>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

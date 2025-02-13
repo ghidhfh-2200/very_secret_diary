@@ -1,0 +1,79 @@
+.button {
+    height: 30px;
+    position: absolute;
+    border-radius: 0px;
+    border: none;
+    font: '楷体';
+}
+.button:hover {
+    background-color: orange;
+}
+.diary-list {
+    position: absolute;
+    left: 10px;
+    top: 170px;
+    height: 420px;
+    width: 300px;
+    background-color: lightblue;
+}
+.message-showbox {
+    width: 900px;
+    height: 500px;
+    position: absolute;
+    left: 320px;
+    top: 10px;
+    background-color: rgb(250, 207, 127);
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+.message-input-box {
+    position: absolute;
+    left: 320px;
+    height: 60px;
+    width: 700px;
+    top: 520px;
+    background-color: lightgray;
+    transition-duration: 0.2s;
+    padding: 5px;
+}
+.message-input-box:focus {
+    outline: none;
+    background-color: rgb(255, 192, 74);
+}
+.sumbit-button {
+    position: absolute;
+    left: 1030px;
+    top: 520px;
+    background-color: lightgreen;
+    height: 70px;
+    width: 190px;
+    line-height: 70px;
+    text-align: center;
+}
+.sumbit-button:hover {
+    background-color: green;
+}
+tr {
+    display: block;
+    border: none;
+    width: 294px;
+    padding: 3px;
+    font-size: 16px;
+}
+tr:hover {
+    background-color: gray;
+}
+.message-box {
+    overflow-x: hidden;
+    overflow-y: hidden;
+    word-wrap: break-word;
+    word-break: break-all;
+    padding: 3px;
+    position: relative;
+    width: 900px;
+    line-height: 30px;
+    transition-duration: 0.2s;
+}
+.message-box:hover {
+    background-color: rgba(250, 207, 127, 0.747);
+}

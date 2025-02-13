@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>绝密日记！</title>
+        <script src="https://libs.baidu.com/jquery/2.0.3/jquery.min.js"></script>
+        <link rel="stylesheet" href="./diary-mainpage.css">
+        <script src="./diary-mainpage.js"></script>
+    </head>
+    <body>
+        <button class="button" style="left: 10px;top: 10px;width: 300px;" onclick="settings_login_type_check()">设置</button>
+        <button class="button" style="left: 10px;top: 50px;width: 300px;" onclick="new_diary()">新建日记</button>
+        <button class="button" style="left: 10px;top: 90px;width: 300px;" onclick="delete_diary()">删除日记</button>
+        <button class="button" style="left: 10px;top: 130px;width: 300px;" onclick="rename_diary()">重命名日记</button>
+        <div class="diary-list" id="diary-list">
+            <tr id="current">当前：</tr><p style="color: red;"></p>
+        </div>
+        <div class="message-showbox" id="diary-showbox"></div>
+        <div class="message-input-box" id="message-input-box" contenteditable="true">说点什么吧！</div>
+        <div class="sumbit-button" onclick="write_message()">提交</div>
+    </body>
+</html>

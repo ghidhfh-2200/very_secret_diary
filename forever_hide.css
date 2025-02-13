@@ -1,0 +1,20 @@
+body {
+    background-color: black;
+}
+.text {
+    display: none;
+    position: relative;
+    top: 200px;
+    animation: fadeinout 4s linear infinite;
+    font-size: 60px;
+    text-align: center;
+    color: lightgray;
+}
+@keyframes fadeinout {
+    0%, 100% {
+        opacity: 0;
+    }
+    50% {
+        opacity: 1;
+    }
+}

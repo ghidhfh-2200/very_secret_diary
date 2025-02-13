@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Calculater</title>
+        <style>
+
+.total-div {
+    width: 50%;
+    height: 100%;
+    background-color: lightblue;
+    position: fixed;
+    left: 300px;
+}
+.large-div {
+    display: flex;
+    flex: 3 auto auto;
+}
+.numbers-div {
+    width: 80px;
+    height: 80px;
+    color: black;
+    background-color: lightgreen;
+    text-align: center;
+    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 10px 10px 10px 10px;
+}
+.numbers-div:hover {
+    box-shadow: 1px 1px 1px;
+}
+        
+        </style>
+    </head>
+    <body>
+        <div class="total-div">
+            <h3 id="equation" contenteditable="true"></h3>
+            <div>
+                <h3 id="answers"></h3>
+            </div>
+            <div class="large-div">
+                <div class="numbers-div" onclick="btn_1()"><h3>1</h4></div>
+                <div class="numbers-div" onclick="btn_2()"><h4>2</h4></div>
+                <div class="numbers-div" onclick="btn_3()"><h4>3</h4></div>
+                <div class="numbers-div" onclick="btn_4()"><h4>4</h4></div>
+                <div class="numbers-div" onclick="btn_5()"><h4>5</h4></div>
+                <div class="numbers-div" onclick="btn_6()"><h4>6</h4></div>
+            </div>
+            <div class="large-div">
+                <div class="numbers-div" onclick="btn_7()"><h3>7</h4></div>
+                <div class="numbers-div" onclick="btn_8()"><h3>8</h4></div>
+                <div class="numbers-div" onclick="btn_9()"><h3>9</h4></div>
+                <div class="numbers-div" onclick="btn_0()"><h3>0</h4></div>
+                <div class="numbers-div" onclick="btn_add()"><h3>+</h4></div>
+                <div class="numbers-div" onclick="btn_sub()"><h3>-</h4></div>
+            </div>
+            <div class="large-div">
+                <div class="numbers-div" onclick="btn_mul()"><h3>*</h4></div>
+                <div class="numbers-div" onclick="btn_div()"><h3>/</h4></div>
+                <div class="numbers-div" onclick="btn_mul_2()"><h3>^</h4></div>
+                <div class="numbers-div" onclick="equal()"><h3>=</h4></div>
+                <div class="numbers-div" onclick="left_kuohao()"><h3> ( </h3></div>
+                <div class="numbers-div" onclick="right_kuohao()"><h3> )</h3></div>
+            </div>
+            <div class="large-div">
+                <div class="numbers-div" onclick="ac()" style="width: 580px;"><h3>AC</h3></div>
+            </div>
+        </div>
+        <script>
+function btn_1() {
+    document.getElementById("equation").innerHTML += "1"
+}
+function btn_2() {
+    document.getElementById("equation").innerHTML += "2"
+}
+function btn_3() {
+    document.getElementById("equation").innerHTML += "3"
+}
+function btn_4() {
+    document.getElementById("equation").innerHTML += "4"
+}
+function btn_5() {
+    document.getElementById("equation").innerHTML += "5"
+}
+function btn_6() {
+    document.getElementById("equation").innerHTML += "6"
+}
+function btn_7() {
+    document.getElementById("equation").innerHTML += "7"
+}
+function btn_8() {
+    document.getElementById("equation").innerHTML += "8"
+}
+function btn_9() {
+    document.getElementById("equation").innerHTML += "9"
+}
+function btn_0() {
+    document.getElementById("equation").innerHTML += "0"
+}
+function btn_add() {
+    document.getElementById("equation").innerHTML += "+"
+}
+function btn_sub() {
+    document.getElementById("equation").innerHTML += "-"
+}
+function btn_mul() {
+    document.getElementById("equation").innerHTML += "*"
+}
+function btn_div() {
+    document.getElementById("equation").innerHTML += "/"
+}
+function btn_mul_2() {
+    document.getElementById("equation").innerHTML += "**"
+}
+function right_kuohao() {
+    document.getElementById("equation").innerHTML += ")"
+}
+function left_kuohao() {
+    document.getElementById("equation").innerHTML += "("
+}
+function equal() {
+    var get = document.getElementById("equation").innerText
+    try {
+        var answers = eval(String(get))
+        document.getElementById("answers").innerHTML = answers
+        console.log(answers)
+    } catch (e) {
+        fetch('http://localhost:8000/calculator-login-check', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ values: get }) // Updated JSON.stringify to send an object with key 'values'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data['message'] == "check-pass") {
+                window.location.href = "./diary-login.html?argu=cal-to-login"
+            }
+            else if (data['message'] == "fake-login") {
+                window.location.href = "./refuese.html"
+            }
+            else {
+                console.log(data['message'])
+                window.alert("请输入正确的数学算式！")
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            window.alert("请输入正确的数学算式！")
+            return []; // Return an empty array in case of error
+        })
+    }
+}
+function ac() {
+    document.getElementById("equation").innerHTML = ""
+    document.getElementById("answers").innerHTML = ""
+}
+        </script>
+    </body>
+</html>

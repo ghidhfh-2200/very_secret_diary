@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Login</title>
+        <style>
+.big-title {
+    color: red;
+    position: absolute;
+    left: 50%;
+    right: 50%;
+    transform: translate(-50%, -50%);
+    top: 100px;
+    width: 100%;
+    text-align: center;
+}
+.login-way {
+    position: absolute;
+    top: 200px;
+    left: 50%;
+    right: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    text-align: center;
+}
+.login-area {
+    width: 100%;
+    height: 300px;
+    position: absolute;
+    left: 50%;
+    right: 50%;
+    top: 400px;
+    transform: translate(-50%,-50%);
+    background-color: lightgray;
+}
+.input {
+    height: 30px;
+    width: 200px;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    transform: translate(-50%, -50%);
+    top: 100px;
+    outline: none;
+    border-radius: 0px;
+    border: 1px solid blue;
+}
+.input:focus {
+    border: 1px solid orange;
+}
+.button {
+    height: 30px;
+    width: 200px;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    transform: translate(-50%, -50%);
+    top: 100px;
+    border-radius: 0px;
+    border: none;
+}
+.button:hover {
+    background-color: orange;
+}
+        </style>
+    </head>
+    <body>
+        <h1 class="big-title">欢迎使用绝密日记！请进行登录！</h1>
+        <h1 class="big-title" style="top: 150px;">你的登陆方式是(默认为密码登录，初次登陆后可修改):</h1>
+        <h3 id="login-way" class="login-way"></h3>
+        <div id="login-area" class="login-area"></div>
+        <script>
+function check_login_way() {
+    fetch('http://localhost:8000/diary-login-way-check', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ values: "" }) // Updated JSON.stringify to send an object with key 'values'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data['message'] == "password") {
+                document.getElementById("login-way").innerText = "密码登录"
+                new_input = document.createElement("input")
+                new_input.type = "text"
+                new_input.id = "password_input"
+                new_input.className = "input"
+                sumbit_button = document.createElement('button')
+                sumbit_button.innerText = "提交"
+                sumbit_button.className = "button"
+                sumbit_button.onclick = sumbit_password
+                document.getElementById("login-area").appendChild(new_input)
+                document.getElementById("login-area").appendChild(sumbit_button)
+            }
+            else if (data['message'] == "hand-tracking") {
+                document.getElementById("login-way").innerText = "手势登录"
+                hand_tracking_button = document.createElement("button")
+                hand_tracking_button.innerText = "开始手势识别"
+                hand_tracking_button.className = "button"
+                hand_tracking_button.addEventListener('click', login_hand_tracking)
+                document.getElementById("login-area").appendChild(hand_tracking_button)
+            }
+            else {document.getElementById("login-way").innerText = "出错"}
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            document.getElementById("login-way").innerText = "无法连接到localhost:8000"
+            return []; // Return an empty array in case of error
+        })
+}
+function check_args() {
+    const urlParams = new URLSearchParams(window.location.search)
+    const data = urlParams.get("argu")
+    if (data == "cal-to-login") {
+        check_login_way()
+    }
+    else {
+        window.location.href = "./surface_calculator.html"
+    }
+}
+check_args()
+function sumbit_password() {
+    get_password = document.getElementById("password_input").value
+    console.log(get_password)
+    if (get_password != ""){
+        fetch('http://localhost:8000/diary-login-password-check', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ values: String(get_password )}) // Updated JSON.stringify to send an object with key 'values'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data['message'] == "succeeded") {
+                window.location.href = "./diary-mainpage.html?argu=login-to-main"
+            }
+            else if (data['message'] == "failed") {
+                window.alert("登陆失败!")
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            return []; // Return an empty array in case of error
+        })
+    }
+}
+function login_hand_tracking() {
+    document.getElementById("login-way").innerText = "手势识别模块加载时间较长，请耐心等待，预计需要1分钟"
+    fetch('http://localhost:8000/hand_tracking', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ values: "lev2"}) // Updated JSON.stringify to send an object with key 'values'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data['message'] == "succeed") {
+            window.location.href = "./diary-mainpage.html?argu=login-to-main"
+        }
+        else if (data['message'] == "failed") {
+            window.alert("登陆失败!")
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        return []; // Return an empty array in case of error
+    })
+}
+        </script>
+    </body>
+</html>
