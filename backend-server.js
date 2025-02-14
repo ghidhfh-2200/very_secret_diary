@@ -223,30 +223,34 @@ app.post("/write_message", (req, res) => {
         }
     })
 })
-app.post("/new_diary", (req,res) => {
+app.post("/new_diary", (req, res) => {
     const new_name = req.body['values']
     const key_iv_rl = createInterface({
         input: createReadStream("./temp/l/o/password.txt"),
         output: process.stdout,
         terminal: false
-    })  
+    })
     const read_result = []
     key_iv_rl.on("line", line => {
         read_result.push(line)
     })
     key_iv_rl.on("close", function() {
-        const key = read_result[4].split(" : ")[1]
-        const iv = read_result[5].split(" : ")[1]
-        const aes_name = encrypt(new_name, key,iv)
-        writeFile("./diary_file/" + aes_name + ".txt", "", (err) => {
-            if (err) {
-                res.json({'message': "Failed"})
-            }
-            else {
-                res.json({'message': "succeed"})
-            }
+        // 检查read_result的长度以确保索引不会超出范围
+        if (read_result.length > 5) {
+            const key = read_result[4].split(" : ")[1]
+            const iv = read_result[5].split(" : ")[1]
+            const aes_name = encrypt(new_name, key, iv)
+            writeFile("./diary_file/" + aes_name + ".txt", "", (err) => {
+                if (err) {
+                    res.json({'message': "Failed"})
+                } else {
+                    res.json({'message': "succeed"})
+                }
+            })
+        } else {
+            // 如果read_result的长度不足，返回错误信息
+            res.json({'message': "Failed to read key and iv"})
         }
-        )
     })
 })
 app.post("/delete_diary", (req, res) => {
