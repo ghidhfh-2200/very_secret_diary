@@ -118,7 +118,26 @@ app.post("/diary-list",(req,res) => {
         });
         if (new_list == []) {res.json({'message': "empty"})}
         else if (new_list != []) {
-            res.json({'message': new_list})
+            const key_iv_rl = createInterface({
+                input: createReadStream("./temp/l/o/password.txt"),
+                output: process.stdout,
+                terminal: false
+            })
+            const read_result = []
+            key_iv_rl.on("line", line => {
+                read_result.push(line)
+            })
+            key_iv_rl.on("close", function() {
+                const key = read_result[4].split(" : ")[1]
+                const iv = read_result[5].split(" : ")[1]
+                const aes_list = []
+                new_list.forEach(list_item => {
+                    const name = list_item.split(".")[0]
+                    const dec_name = decrypt(name,key,iv) + ".txt"
+                    aes_list.push(dec_name)
+                })
+                res.json({'message': aes_list})
+            })
         }
     })
 })
@@ -135,8 +154,9 @@ app.post("/diary-read", (req,res) => {
     password_iv_rl.on("close", function() {
         const key = key_iv_result[4].split(" : ")[1]
         const iv = key_iv_result[5].split(" : ")[1]
+        const name = encrypt(req.body['values'].split(".")[0],key,iv) + ".txt"
         const rl = createInterface({
-            input: createReadStream("./diary_file/" + req.body['values']),
+            input: createReadStream("./diary_file/" + name),
             output: process.stdout,
             terminal: false
         })
@@ -177,8 +197,10 @@ app.post("/write_message", (req, res) => {
         const iv = read_result[5].split(" : ")[1]
         const aes_1 = encrypt(get_input[1], key ,iv)
         const aes_2 = encrypt(get_input[2], key, iv)
+        const aes_name = encrypt(get_input[0].split(".")[0], key, iv)
+        console.log(aes_name)
         if (read_result.length == 0) {
-            appendFile("./diary_file/"+get_input[0], aes_1 + "   " + aes_2, (err) => {
+            appendFile("./diary_file/"+aes_name + ".txt", aes_1 + "   " + aes_2, (err) => {
                 if (err) {
                     console.error(err)
                     res.json({'message': "failed"})
@@ -189,7 +211,7 @@ app.post("/write_message", (req, res) => {
             })
         }
         else {
-            appendFile("./diary_file/"+get_input[0], "\n" + aes_1 + "   " + aes_2, (err) => {
+            appendFile("./diary_file/"+aes_name + ".txt", "\n" + aes_1 + "   " + aes_2, (err) => {
                 if (err) {
                     console.error(err)
                     res.json({'message': "failed"})
@@ -203,30 +225,78 @@ app.post("/write_message", (req, res) => {
 })
 app.post("/new_diary", (req,res) => {
     const new_name = req.body['values']
-    writeFile("./diary_file/" + new_name + ".txt", "", (err) => {
-        if (err) {
-            res.json({'message': "Failed"})
+    const key_iv_rl = createInterface({
+        input: createReadStream("./temp/l/o/password.txt"),
+        output: process.stdout,
+        terminal: false
+    })  
+    const read_result = []
+    key_iv_rl.on("line", line => {
+        read_result.push(line)
+    })
+    key_iv_rl.on("close", function() {
+        const key = read_result[4].split(" : ")[1]
+        const iv = read_result[5].split(" : ")[1]
+        const aes_name = encrypt(new_name, key,iv)
+        writeFile("./diary_file/" + aes_name + ".txt", "", (err) => {
+            if (err) {
+                res.json({'message': "Failed"})
+            }
+            else {
+                res.json({'message': "succeed"})
+            }
         }
-        else {
-            res.json({'message': "succeed"})
-        }
-    }
-    )
+        )
+    })
 })
 app.post("/delete_diary", (req, res) => {
     const delete_name = req.body['values']
-    unlink("./diary_file/" + delete_name, (err) => {
-        if (err) res.json({'message': err})
-        else res.json({'message': "succeed"})
+    const del = delete_name.split(".")[0]
+    const key_iv_rl = createInterface({
+        input: createReadStream("./temp/l/o/password.txt"),
+        output: process.stdout,
+        terminal: false
+    })
+    const read_result = []
+    key_iv_rl.on("line", line => {
+        read_result.push(line)
+    })
+    key_iv_rl.on("close", function() {
+        const key = read_result[4].split(" : ")[1]
+        const iv = read_result[5].split(" : ")[1]
+        const aes_delete_name = encrypt(del, key,iv)
+        unlink("./diary_file/" + aes_delete_name + ".txt", (err) => {
+            if (err) res.json({'message': err})
+            else res.json({'message': "succeed"})
+        })
     })
 })
-app.post("/rename_diary", (req,res) => {
-    const old_new_list = req.body['values']
-    rename("./diary_file/" + old_new_list[0], "./diary_file/" + old_new_list[1] + ".txt", (err) => {
-        if (err) res.json({'message': err})
-        else res.json({'message': "succeed"})
-    })
-})
+app.post("/rename_diary", (req, res) => {
+    const old_new_list = req.body['values'];
+    console.log(old_new_list)
+    const key_iv_rl = createInterface({
+        input: createReadStream("./temp/l/o/password.txt"),
+        output: process.stdout,
+        terminal: false
+    });
+    const read_result = [];
+    key_iv_rl.on("line", line => {
+        read_result.push(line);
+    });
+    key_iv_rl.on("close", function() {
+        const key = read_result[4].split(" : ")[1];
+        const iv = read_result[5].split(" : ")[1];
+        const aes_old = encrypt(old_new_list[0].split(".")[0], key, iv);
+        const aes_new = encrypt(old_new_list[1], key, iv);
+        rename("./diary_file/" + aes_old + ".txt", "./diary_file/" + aes_new + ".txt", (err) => {
+            if (err) {
+                res.json({'message': "Failed to rename file: " + err.message});
+            } else {
+                res.json({'message': "succeed"});
+            }
+        });
+    });
+});
 app.post("/settings-login-type", (req, res) => {
     const rl = createInterface({
         input: createReadStream("./temp/l/o/password.txt"),
