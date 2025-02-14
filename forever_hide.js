@@ -51,7 +51,7 @@ document.addEventListener("DOMContentLoaded", () => {
         })
         .catch(error => {
             console.error('Error:', error);
-            return []; // Return an empty array in case of error
+            alert("无法连接到服务器,请确保服务器开启!") // Return an empty array in case of error
         })
         time ++
     }

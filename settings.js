@@ -42,7 +42,7 @@ function show_data() {
     })
     .catch(error => {
         console.error("Error:"+ error)
-        return [];
+        alert("无法连接到服务器,请确保服务器开启!")
     })
 }
 function check_argu() {
@@ -83,7 +83,7 @@ function enable_calculator_password_change() {
         })
         .catch(error => {
             console.error("Error:"+ error)
-            return [];
+            alert("无法连接到服务器,请确保服务器开启!")
         })
     }
 }
@@ -109,7 +109,7 @@ function hand_tracking() {
     })
     .catch(error => {
         console.error("Error:"+ error)
-        return [];
+        alert("无法连接到服务器,请确保服务器开启!")
     })
 }
 function password_login() {
@@ -134,7 +134,7 @@ function password_login() {
     })
     .catch(error => {
         console.error("Error:"+ error)
-        return [];
+        alert("无法连接到服务器,请确保服务器开启!")
     })
 }
 function lev2_password_change() {
@@ -164,7 +164,7 @@ function lev2_password_change() {
             })
             .catch(error => {
                 console.error("Error:"+ error)
-                return [];
+                alert("无法连接到服务器,请确保服务器开启!")
             })
         }
     }
@@ -191,7 +191,7 @@ function enable_settings_password() {
     })
     .catch(error => {
         console.error("Error:"+ error)
-        return [];
+        alert("无法连接到服务器,请确保服务器开启!")
     })
 }
 function enable_settings_handtracking() {
@@ -216,7 +216,7 @@ function enable_settings_handtracking() {
     })
     .catch(error => {
         console.error("Error:"+ error)
-        return [];
+        alert("无法连接到服务器,请确保服务器开启!")
     })
 }
 function settings_change_password() {
@@ -246,7 +246,7 @@ function settings_change_password() {
         })
         .catch(error => {
             console.error("Error:"+ error)
-            return [];
+            alert("无法连接到服务器,请确保服务器开启!")
         })
     }
 }
@@ -266,9 +266,15 @@ function start_hand_tracking_manager() {
     })
     .catch(error => {
         console.error('Error:', error);
-        return []; // Return an empty array in case of error
+        alert("无法连接到服务器,请确保服务器开启!") // Return an empty array in case of error
     })
 }
 function forever_hide() {
-    window.location.href = "./forever_hide.html?argu=fh"
+    const if_continue = confirm("是否继续操作？请慎重选择，此操作无法撤销！")
+    if (if_continue == true) {
+        window.location.href = "./forever_hide.html?argu=fh"
+    }
+    else {
+        
+    }
 }

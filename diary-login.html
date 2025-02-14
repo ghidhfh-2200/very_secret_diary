@@ -65,7 +65,7 @@
     </head>
     <body>
         <h1 class="big-title">欢迎使用绝密日记！请进行登录！</h1>
-        <h1 class="big-title" style="top: 150px;">你的登陆方式是(默认为密码登录，初次登陆后可修改):</h1>
+        <h1 class="big-title" style="top: 150px;">你的登陆方式是(默认为手势登录，初次登陆后可修改):</h1>
         <h3 id="login-way" class="login-way"></h3>
         <div id="login-area" class="login-area"></div>
         <script>
@@ -105,7 +105,7 @@ function check_login_way() {
         .catch(error => {
             console.error('Error:', error);
             document.getElementById("login-way").innerText = "无法连接到localhost:8000"
-            return []; // Return an empty array in case of error
+            alert("无法连接到服务器,请确保服务器开启!") // Return an empty array in case of error
         })
 }
 function check_args() {
@@ -141,7 +141,7 @@ function sumbit_password() {
         })
         .catch(error => {
             console.error('Error:', error);
-            return []; // Return an empty array in case of error
+            alert("无法连接到服务器,请确保服务器开启!") // Return an empty array in case of error
         })
     }
 }
@@ -165,7 +165,7 @@ function login_hand_tracking() {
     })
     .catch(error => {
         console.error('Error:', error);
-        return []; // Return an empty array in case of error
+        alert("无法连接到服务器,请确保服务器开启!") // Return an empty array in case of error
     })
 }
         </script>

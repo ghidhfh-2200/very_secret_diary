@@ -18,7 +18,7 @@ function fetch_for_diaries() {
     })
     .catch(error => {
         console.error("Error:"+ error)
-        return [];
+        alert("无法连接到服务器,请确保服务器开启!")
     })
 }
 function check_argu() {
@@ -58,7 +58,7 @@ function show_diary() {
     })
     .catch(error => {
         console.error("Error:"+ error)
-        return [];
+        alert("无法连接到服务器,请确保服务器开启!")
     })
 }
 function write_message() {
@@ -94,7 +94,7 @@ function write_message() {
         })
         .catch(error => {
             console.error("Error:"+ error)
-            return [];
+            alert("无法连接到服务器,请确保服务器开启!")
         })
     }
     else {
@@ -125,7 +125,7 @@ function new_diary() {
         })
         .catch(error => {
             console.error("Error:"+ error)
-            return [];
+            alert("无法连接到服务器,请确保服务器开启!")
         })
     }
 }
@@ -160,7 +160,7 @@ function delete_diary() {
         })
         .catch(error => {
             console.error("Error:"+ error)
-            return [];
+            alert("无法连接到服务器,请确保服务器开启!")
         })
     }
     else {}
@@ -195,7 +195,7 @@ function rename_diary() {
         })
         .catch(error => {
             console.error("Error:"+ error)
-            return [];
+            alert("无法连接到服务器,请确保服务器开启!")
         })
     }
 }
@@ -223,7 +223,7 @@ function settings_login_type_check() {
     })
     .catch(error => {
         console.error("Error:"+ error)
-        return [];
+        alert("无法连接到服务器,请确保服务器开启!")
     })
 }
 function settings_login(prompt) {
@@ -248,7 +248,7 @@ function settings_login(prompt) {
     })
     .catch(error => {
         console.error("Error:"+ error)
-        return [];
+        alert("无法连接到服务器,请确保服务器开启!")
     })
 }
 function settings_enter_hand_tracking() {
@@ -270,6 +270,6 @@ function settings_enter_hand_tracking() {
     })
     .catch(error => {
         console.error('Error:', error);
-        return []; // Return an empty array in case of error
+        alert("无法连接到服务器,请确保服务器开启!") // Return an empty array in case of error
     })
 }

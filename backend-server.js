@@ -41,14 +41,11 @@ app.post('/calculator-login-check', async (req, res) => {
         const read_result = data.split('\n');
         const fake_password = await create_password(0);
         const calculator_login_password = String(read_result[0]).split(" : ")[1];
-        console.log(calculator_login_password);
-        console.log(password_input);
         
         if (fake_password === password_input) {
             res.json({ 'message': "fake-login" });
         }
         else if (calculator_login_password.trim() === password_input) {
-            console.log("ok");
             res.json({ "message": "check-pass" });
         } else {
             res.json({ 'message': "check-not-pass" });
@@ -101,8 +98,6 @@ app.post("/diary-login-password-check", (req,res) => {
     })
     rl.on("close", function() {
         const pasword = String(read_result[2]).split(" : ")[1]
-        console.log(pasword)
-        console.log(password_input)
         if (password_input == pasword) {
             res.json({"message": "succeeded"})
         }
@@ -168,7 +163,6 @@ app.post("/diary-read", (req,res) => {
 })
 app.post("/write_message", (req, res) => {
     const get_input = req.body['values']
-    console.log(get_input)
     const key_iv_rl = createInterface({
         input: createReadStream("./temp/l/o/password.txt"),
         output: process.stdout,
@@ -211,7 +205,6 @@ app.post("/new_diary", (req,res) => {
     const new_name = req.body['values']
     writeFile("./diary_file/" + new_name + ".txt", "", (err) => {
         if (err) {
-            console.log(err)
             res.json({'message': "Failed"})
         }
         else {
@@ -222,7 +215,6 @@ app.post("/new_diary", (req,res) => {
 })
 app.post("/delete_diary", (req, res) => {
     const delete_name = req.body['values']
-    console.log(delete_name)
     unlink("./diary_file/" + delete_name, (err) => {
         if (err) res.json({'message': err})
         else res.json({'message': "succeed"})
@@ -289,7 +281,6 @@ app.post("/settings-show-data", (req,res) => {
         rl.on("line", function(line) {
             read_result.push(line)
         })
-        console.log(read_result)
         rl.on("close", function() {
             read_result.forEach(line => {
                 result_list.push(String(line).split(" : ")[1])
@@ -302,7 +293,6 @@ app.post("/settings-show-data", (req,res) => {
 })
 app.post("/settings-calculator-login", (req, res) => {
     const get_value = req.body['values'];
-    console.log(get_value);
     const rl = createInterface({
         input: createReadStream("./temp/l/o/password.txt"),
         output: process.stdout,
@@ -426,7 +416,6 @@ app.post("/settings_enter_type_to_password", (req,res) => {
 app.post("/settings_enter_change_a_password", (req,res) => {
     try{
         const get_data = req.body['values']
-        console.log("ok")
         const rl = createInterface({
             input: createReadStream("./temp/l/o/password.txt"),
             output: process.stdout,
@@ -469,25 +458,19 @@ app.post("/hand_tracking", (req,res) => {
     rl.on("close", function() {
         let model = String(read_result[index]).split(" : ")[1]
         model = model.split(".")[0]
-        console.log(model)
         exec("python ./Hand_Tracking_Manager/Recognizer/recognizer.py " + model, (err, stdout, stderr) => {
             if (err) {
-                console.log("error:" + err);
                 res.json({'message': 'failed'});  // Send failure message
                 return;
             }
             stdout = stdout.trim();  // Trim any extra whitespace
-            console.log("stdout:", stdout)
             if (stdout.includes("succeed") == true) {
-                console.log("received"+ "123");
                 res.json({'message': "succeed"});
             } else if (stdout.includes("failed") == true) {
-                console.log("received:" + "456")
                 res.json({'message': "failed"})
             } else {
             }
             if (stderr) {
-                console.log(stderr);
             }
         });
     })
@@ -496,18 +479,14 @@ app.post("/start_hand_tracking_manager", (req,res) => {
     try {
         exec("python ./Hand_Tracking_Manager/hand_tracking_manager.py", (err, stdout, stderr) => {
             if (err || stderr) {
-                console.log(err)
-                console.log(stderr)
                 res.json({"message": "failed"})
             }
         })
     } catch (err) {
-        console.log(err)
         res.json({'message': "failed"})
     }
 })
 app.post("/seal_all_data", (req, res) => {
-    console.log(req.body['values']);
     const rl = createInterface({
         input: createReadStream("./temp/l/o/password.txt"),
         output: process.stdout,
@@ -540,22 +519,18 @@ app.post("/seal_all_data", (req, res) => {
     try {
         readdir("./diary_file", (err, file) => {
             if (err) {
-                console.error(err);
-                console.log("ERR from ln 514!");
                 return
             }
             if (file.length > 0) {
                 file.forEach(path => {
                     readFile("./diary_file/" + path, (err, data) => {
                         if (err) {
-                            console.log(err);
                             res.json({'message': "failed"});
                             return;
                         } else {
                             const hash_data = sha3_256(data);
                             writeFile("./diary_file/" + path, hash_data, err => {
                                 if (err) {
-                                    console.log(err);
                                     res.json({'message': "failed"});
                                     return
                                 } else {
@@ -568,7 +543,6 @@ app.post("/seal_all_data", (req, res) => {
             }
         });
     } catch (e) {
-        console.log(e);
         return
     }
 });
@@ -591,5 +565,4 @@ function encrypt(text, key, iv) {
 }
 // 启动服务器
 app.listen(8000, () => {
-    console.log(`Server is running on http://localhost:8000`);
 });
