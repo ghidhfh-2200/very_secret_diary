@@ -19,6 +19,8 @@
 
 - **Enter Settings with a Separate Key**  
   The key to the settings page is different from the entrance key. You also have the option to use either a password or hand tracking.
+- **Log function**
+  The APP has a log which records your every operate on the APP
 
 ### 2. Structure
 - **temp dir**  

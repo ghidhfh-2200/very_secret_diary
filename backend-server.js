@@ -43,11 +43,14 @@ app.post('/calculator-login-check', async (req, res) => {
         const calculator_login_password = String(read_result[0]).split(" : ")[1];
         
         if (fake_password === password_input) {
+            write_log("invasion", "calculator", fake_password)
             res.json({ 'message': "fake-login" });
         }
         else if (calculator_login_password.trim() === password_input) {
+            write_log("succeed", "calculator", "/")
             res.json({ "message": "check-pass" });
         } else {
+            write_log("fail", "calculator", password_input)
             res.json({ 'message': "check-not-pass" });
         }
     } catch (err) {
@@ -99,9 +102,11 @@ app.post("/diary-login-password-check", (req,res) => {
     rl.on("close", function() {
         const pasword = String(read_result[2]).split(" : ")[1]
         if (password_input == pasword) {
+            write_log("succeed", "lev2", "/")
             res.json({"message": "succeeded"})
         }
         else {
+            write_log("fail", "lev2", password_input)
             res.json({'message': "failed"})
         }
     })
@@ -336,9 +341,11 @@ app.post("/settings-login", (req,res) => {
     rl.on("close", function() {
         const password = read_result[7].split(" : ")[1]
         if (password == input) {
+            write_log("succeed", "settings", "/")
             res.json({'message': "succeed"})
         }
         else {
+            write_log("fail", "settings", input)
             res.json({'message': "failed"})
         }
     })
@@ -539,8 +546,20 @@ app.post("/hand_tracking", (req,res) => {
             }
             stdout = stdout.trim();  // Trim any extra whitespace
             if (stdout.includes("succeed") == true) {
+                if (index == 0) {
+                    write_log("succeed", "lev2", "/")
+                }
+                else {
+                    write_log("succeed", "settings", "/")
+                }
                 res.json({'message': "succeed"});
             } else if (stdout.includes("failed") == true) {
+                if (index == 0) {
+                    write_log("fail", "lev2", "/")
+                }
+                else {
+                    write_log("fail", "settings", "/")
+                }
                 res.json({'message': "failed"})
             } else {
             }
@@ -620,6 +639,73 @@ app.post("/seal_all_data", (req, res) => {
         return
     }
 });
+app.post("/fetch_for_logs", (req, res) => {
+    const get_data = req.body['values'];
+    readdir("./logs", (err, files) => {
+        if (err) {
+            console.error("Error reading directory:", err);
+            res.json({'message': "failed"});
+        } else {
+            let fileFound = false;
+            files.forEach(file => {
+                if (file.split(".")[0] == get_data) {
+                    fileFound = true;
+                    const rl = createInterface({
+                        input: createReadStream(`./logs/${file}`), // Ensure correct path
+                        output: process.stdout,
+                        terminal: false
+                    });
+                    const read_result = [];
+                    rl.on("line", line => {
+                        read_result.push(line);
+                    });
+                    rl.on("close", function() {
+                        res.json({'message': read_result});
+                    });
+                }
+            });
+            if (!fileFound) {
+                console.error("File not found for date:", get_data);
+                res.json({'message': "file not found"});
+            }
+        }
+    });
+});
+app.post("/find_date", (req, res) => {
+    const get_data = req.body['values'];
+    const date_parts = get_data.split("-");
+    const len = date_parts.length;
+    const file_name = date_parts[0] + "-" + date_parts[1] + ".txt";
+    const rl = createInterface({
+        input: createReadStream("./logs/" + file_name),
+        output: process.stdout
+    });
+    const read_result = [];
+    const send_list = [];
+    rl.on("line", line => { read_result.push(line); });
+    rl.on("close", function() {
+        if (len === 2) {
+            // If only year and month are provided, return all logs for that month
+            res.json({'message': read_result});
+        } else {
+            // If day is also provided, filter logs for that specific day
+            read_result.forEach(line => {
+                if (line.split(",")[0].split(" ")[0] === get_data) {
+                    send_list.push(line);
+                }
+            });
+            if (send_list.length === 0) {
+                res.json({'message': "failed"});
+            } else {
+                res.json({'message': send_list});
+            }
+        }
+    });
+    rl.on("error", function(err) {
+        res.json({'message': "failed"});
+    });
+});
+
 function sha3_256(input) {
     const hash = createHash("sha3-256")
     hash.update(input)
@@ -636,6 +722,57 @@ function encrypt(text, key, iv) {
     let encrypted = cipher.update(text, 'utf-8', "base64")
     encrypted += cipher.final('base64')
     return encrypted
+}
+function write_log(type, level, password) {
+    console.log("log-run");
+    const date = new Date();
+    const year = String(date.getFullYear());
+    let month = String(date.getMonth() + 1).padStart(2, '0');
+    let day = String(date.getDate()).padStart(2, '0');
+    let hour = String(date.getHours()).padStart(2, '0');
+    let minute = String(date.getMinutes()).padStart(2, '0');
+    let seconds = String(date.getSeconds()).padStart(2, '0');
+    const time = `${year}-${month}-${day} ${hour}:${minute}:${seconds}`;
+    console.log(time);
+    readdir("./logs", function (err, data) {
+        if (err) {
+            console.error(err); // Log the error instead of returning "error"
+            return;
+        }
+        const file_list = [];
+        data.forEach(file => {
+            file_list.push(file);
+        });
+        if (file_list.includes(`${year}-${month}.txt`)) { // Check if the file exists in the list
+            const rl = createInterface({
+                input: createReadStream(`./logs/${year}-${month}.txt`),
+                output: process.stdout
+            });
+            const read_result = [];
+            rl.on("line", line => { read_result.push(line); });
+            rl.on("close", function () {
+                const log = `${time},${type},${level},${password}`; // Using template literals
+                console.log(log);
+                read_result.push(log);
+                appendFile(`./logs/${year}-${month}.txt`, "\n" + log, err => {
+                    if (err) {
+                        console.error(err); // Log the error instead of returning "failed"
+                    } else {
+                        console.log("Log appended successfully");
+                    }
+                });
+            });
+        } else {
+            const log = `${time},${type},${level},${password}`; // Using template literals
+            writeFile(`./logs/${year}-${month}.txt`, log, (err) => {
+                if (err) {
+                    console.error(err); // Log the error instead of returning "failed"
+                } else {
+                    console.log("Log written successfully");
+                }
+            });
+        }
+    });
 }
 // 启动服务器
 app.listen(8000, () => {

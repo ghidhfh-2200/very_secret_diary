@@ -7,7 +7,8 @@
     </head>
     <body>
         <div id="item_boxes" class="settings-box">
-            <div class="settings-item">登录与安全</div>
+            <div class="settings-item" id="aas-bar">登录与安全</div>
+            <div class="settings-item" id="log-bar" onclick="fetch_for_logs()">日志管理器</div>
         </div>
         <div id="settings-content" class="settings-content">
             <div id="acount_and_safety">
@@ -49,6 +50,52 @@
                     <button class="dangerous-button" style="left: 50px;" onclick="forever_hide()">永久封存</button>
                 </div>
             </div>
+            <div id="logs" style="overflow-y: auto;overflow-x: hidden;">
+                <div class="settings-small-div" style="display: flex;flex-direction: column;">
+                    <div style="display: inline-block;">
+                        <h3>查询日期(用-分割,如2025-3-1,个位数直接写,不用写成0X)</h3>
+                        <input type="text" class="input" id="find_date">
+                        <button class="button" onclick="find_date()">提交</button>
+                        <button class="button" onclick="fetch_for_logs()">返回</button>
+                    </div>
+                    <div style="display: inline-block;">
+                        <h3>筛选：</h3>
+                        <input type="radio" name="filter" value="success" id="filter-option-success">
+                        <label for="filter-option-success" style="color: green;" onclick="search('succeed')">成功</label>
+                        <input type="radio" name="filter" value="fail" id="filter-option-fail">
+                        <label for="filter-option-fail" style="color: orangered;" onclick="search('fail')">失败</label>
+                        <input type="radio" name="filter" value="invasion" id="filter-option-invasion">
+                        <label for="filter-option-invasion" style="color: red" onclick="search('invasion')">入侵</label>
+                        <input type="radio" name="filter" value="all" id="filter-option-all">
+                        <label for="filter-option-all" onclick="search('all')">全部</label>
+                    </div>
+                </div>
+                <div class="settings-small-div" style="max-height: 300px;">
+                    <div class="log-bar">
+                        <div class="log-tr" style="width: 150px;">时间</div>
+                        <div class="log-tr" style="width: 200px;">级别</div>
+                        <div class="log-tr" style="width: 300px;">层级</div>
+                        <div class="log-tr" style="width: 500px;">使用密码</div>
+                    </div>
+                    <div id="log-context">
+
+                    </div>
+                </div>
+            </div>
         </div>
+        <script>
+document.getElementById("log-bar").addEventListener("click", function() {
+    document.getElementById("acount_and_safety").style.display = "none";
+    document.getElementById("logs").style.display = "block";
+});
+
+document.getElementById("aas-bar").addEventListener("click", function() {
+    document.getElementById("logs").style.display = "none";
+    document.getElementById("acount_and_safety").style.display = "block";
+});
+
+document.getElementById("logs").style.display = "none";
+document.getElementById("acount_and_safety").style.display = "block";
+        </script>
     </body>
 </html>

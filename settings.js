@@ -271,10 +271,152 @@ function start_hand_tracking_manager() {
 }
 function forever_hide() {
     const if_continue = confirm("是否继续操作？请慎重选择，此操作无法撤销！")
-    if (if_continue == true) {
-        window.location.href = "./forever_hide.html?argu=fh"
+    if (if_continue == true) {window.location.href = "./forever_hide.html?argu=fh"}
+    else {}
+}
+function fetch_for_logs() {
+    console.log("fetch_for_logs");
+    const date = new Date();
+    const year = date.getFullYear();
+    let month = date.getMonth() + 1; // 月份需要加1
+    month = month < 10 ? `0${month}` : month; // 确保月份是两位数
+    const current_time = `${year}-${month}`;
+    document.getElementById("log-context").innerHTML = ""; // Corrected assignment operator from '==' to '=' to clear the content
+    fetch("http://localhost:8000/fetch_for_logs", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ values: current_time })
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log(data['message']);
+        if (data['message'] == "failed") {
+            alert("出错！");
+        } else {
+            const lines = data['message'];
+            document.getElementById("log-context").innerHTML = ""; // Clearing the content before adding new entries
+            lines.forEach(line => {
+                const line_list = line.split(",");
+                const tr_1 = document.createElement("tr");
+                tr_1.innerText = line_list[0];
+                tr_1.style.width = "150px";
+                const tr_2 = document.createElement("tr");
+                if (line_list[1] == "succeed") {
+                    tr_2.style.color = "green";
+                } else if (line_list[1] == "fail") {
+                    tr_2.style.color = "orangered";
+                } else if (line_list[1] == "invasion") {
+                    tr_2.style.color = "red";
+                }
+                tr_2.innerText = line_list[1];
+                tr_2.style.width = "200px";
+                const tr_3 = document.createElement("tr");
+                tr_3.innerText = line_list[2];
+                tr_3.style.width = "300px";
+                const tr_4 = document.createElement("tr");
+                tr_4.innerText = line_list[3];
+                tr_4.style.width = "500px";
+                const new_div = document.createElement("div");
+                new_div.className = "log-bar";
+                new_div.appendChild(tr_1);
+                new_div.appendChild(tr_2);
+                new_div.appendChild(tr_3);
+                new_div.appendChild(tr_4);
+                document.getElementById("log-context").appendChild(new_div);
+            });
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        alert("无法连接到服务器！请检查服务器是否开启!");
+    });
+}
+function search(mode) {
+    const get_context = document.getElementById("log-context")
+    Array.from(get_context.children).forEach(line => {
+        const state = line.children[1].innerText
+        if (mode == "succeed") {
+            if (state != "succeed") {
+                get_context.removeChild(line)
+            }
+        }
+        else if (mode == "fail") {
+            if (state != "fail") {
+                get_context.removeChild(line)
+            }
+        }
+        else if (mode == "invasion") {
+            if (state != "invasion") {
+                get_context.removeChild(line)
+            }
+        }
+        else if (mode == "all") {
+            fetch_for_logs()
+        }
+    })
+}
+function find_date() {
+    const date = document.getElementById("find_date").value
+    try {
+        let split_list = date.split("-")
+        if (Number(split_list[1] < 10)) {
+            split_list[1] = "0" + String(split_list[1])
+        }
+        if (Number(split_list[2]) < 10) {
+            split_list[2] = "0" + String(split_list[2])
+        }
+        const new_date = split_list[0] + "-" + split_list[1] + "-" + split_list[2]
+        fetch("http://localhost:8000/find_date", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ values: new_date })
+        })
+       .then(response => response.json())
+       .then(data => {
+            if (data['message'] == "failed") {
+                alert("出错！")
+            }
+            else {
+                const lines = data['message'];
+                document.getElementById("log-context").innerHTML = ""; // Clearing the content before adding new entries
+                lines.forEach(line => {
+                    const line_list = line.split(",");
+                    const tr_1 = document.createElement("tr");
+                    tr_1.innerText = line_list[0];
+                    tr_1.style.width = "150px";
+                    const tr_2 = document.createElement("tr");
+                    if (line_list[1] == "succeed") {
+                        tr_2.style.color = "green";
+                    } else if (line_list[1] == "fail") {
+                        tr_2.style.color = "orangered";
+                    } else if (line_list[1] == "invasion") {
+                        tr_2.style.color = "red";
+                    }
+                    tr_2.innerText = line_list[1];
+                    tr_2.style.width = "200px";
+                    const tr_3 = document.createElement("tr");
+                    tr_3.innerText = line_list[2];
+                    tr_3.style.width = "300px";
+                    const tr_4 = document.createElement("tr");
+                    tr_4.innerText = line_list[3];
+                    tr_4.style.width = "500px";
+                    const new_div = document.createElement("div");
+                    new_div.className = "log-bar";
+                    new_div.appendChild(tr_1);
+                    new_div.appendChild(tr_2);
+                    new_div.appendChild(tr_3);
+                    new_div.appendChild(tr_4);
+                    document.getElementById("log-context").appendChild(new_div);
+                });
+            }
+        })
     }
-    else {
-        
+    catch (e) {
+        console.error(e)
+        alert("请正确合法输入！")
     }
 }
